@@ -3,36 +3,74 @@
  * 	Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
  * 	German Research Center for Artificial Intelligence
  * 	http://www.dfki.de
- * 
- * 	Permission is hereby granted, free of charge, to any person obtaining a 
- * 	copy of this software and associated documentation files (the 
- * 	"Software"), to deal in the Software without restriction, including 
- * 	without limitation the rights to use, copy, modify, merge, publish, 
- * 	distribute, sublicense, and/or sell copies of the Software, and to 
- * 	permit persons to whom the Software is furnished to do so, subject to 
+ *
+ * 	Permission is hereby granted, free of charge, to any person obtaining a
+ * 	copy of this software and associated documentation files (the
+ * 	"Software"), to deal in the Software without restriction, including
+ * 	without limitation the rights to use, copy, modify, merge, publish,
+ * 	distribute, sublicense, and/or sell copies of the Software, and to
+ * 	permit persons to whom the Software is furnished to do so, subject to
  * 	the following conditions:
- * 
- * 	The above copyright notice and this permission notice shall be included 
+ *
+ * 	The above copyright notice and this permission notice shall be included
  * 	in all copies or substantial portions of the Software.
- * 
- * 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
- * 	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- * 	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
- * 	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
- * 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ *
+ * 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * 	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * 	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * 	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 /**
  * Media Module: Implementation for Speech Recognition via the Google Web Speech Recognition service v1 using a proxy/mediator server
- * 
- * 
+ *
+ *
  * @requires Cross-Domain access, if proxy/mediator server is not located in the same domain as the web app
  * @requires CSP for accessing the proxy/mediator server via ws: or wss:, e.g. "connect-src ws://server-address" or "default-src connect-src ws://server-address"
- * 
+ *
  */
+
+;(function (root, factory) {
+
+	// legacy mode mmir v3
+	var isLegacyMode3 = true;
+		// legacy mode mmir v4
+	var isLegacyMode4 = true;
+	var mmirRef = null;
+	var mmirName = typeof MMIR_CORE_NAME === 'string'? MMIR_CORE_NAME : 'mmir';
+	if(root && root[mmirName]){
+		mmirRef = root[mmirName];
+		//just to make sure: set legacy-mode if version is < v4
+		isLegacyMode3 = mmirRef? mmirRef.isVersion(4, '<') : true;
+		isLegacyMode4 = isLegacyMode3 || mmirRef.isVersion(5, '<');
+	}
+
+	if(isLegacyMode3 || isLegacyMode4){
+
+		root.newWebAudioAsrImpl = factory(mmirRef, isLegacyMode3);
+
+	} else {
+
+		if (typeof define === 'function' && define.amd) {
+				// AMD. Register as an anonymous module.
+				define(function () {
+						return factory(mmirRef, false);
+				});
+		} else if (typeof module === 'object' && module.exports) {
+				// Node. Does not work with strict CommonJS, but
+				// only CommonJS-like environments that support module.exports,
+				// like Node.
+				module.exports = factory(mmirRef, false);
+		} else {
+				// Browser globals
+				root.newWebAudioAsrImpl = factory(mmirRef, false);
+		}
+	}
+}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this, function (_mmir, _isLegacyMode) {
+
 newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 
 	/**  @memberOf Googlev1WebAudioInputImpl# */
@@ -41,53 +79,34 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 	/**  @memberOf Googlev1WebAudioInputImpl# */
 	var _pluginName = 'Googlev1WebAudioInputImpl';
 
-	/** 
-	 * legacy mode: use pre-v4 API of mmir-lib
-	 * @memberOf Googlev1WebAudioInputImpl#
-	 */
-	var _isLegacyMode = true;
-	/** 
-	 * Reference to the mmir-lib core (only available in non-legacy mode)
-	 * @type mmir
-	 * @memberOf Googlev1WebAudioInputImpl#
-	 */
-	var _mmir = null;
-	
-	//get mmir-lib core from global namespace:
-	_mmir = window[typeof MMIR_CORE_NAME === 'string'? MMIR_CORE_NAME : 'mmir'];
-	if(_mmir){
-		// set legacy-mode if version is < v4
-		_isLegacyMode = _mmir? _mmir.isVersion(4, '<') : true;
-	}
-	
 	/**
-	 * HELPER for require(): 
+	 * HELPER for require():
 	 * 		use module IDs (and require instance) depending on legacy mode
-	 * 
+	 *
 	 * @param {String} id
 	 * 			the require() module ID
-	 * 
+	 *
 	 * @returns {any} the require()'ed module
-	 * 
+	 *
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
 	var _req = function(id){
 		var name = (_isLegacyMode? '' : 'mmirf/') + id;
 		return _mmir? _mmir.require(name) : require(name);
 	};
-	
-	/** 
+
+	/**
 	 * @type mmir.LanguageManager
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
 	var languageManager = _req('languageManager');
-	/** 
+	/**
 	 * @type mmir.ConfigurationManager
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
 	var configurationManager = _req('configurationManager');
 
-	/** 
+	/**
 	 * @type mmir.ConfigurationManager
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
@@ -100,22 +119,22 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var inputId = 0;
-	
+
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var lastBlob = false;
 
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var isUseIntermediateResults = false;
-	
+
 	/**
 	 * Recognition options for current recognition process.
-	 * 
+	 *
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 * @see mmir.MediaManager#recognize
 	 */
 	var currentOptions;
-	
-	/** 
+
+	/**
 	 * for gathering partial ASR results when using startRecord:
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
@@ -154,24 +173,24 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 //		console.debug( asrResultCacheToString(recordAsrResultCache) );
 	};
 
-	/** 
+	/**
 	 * @type WebSocket
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
 	var webSocket = null;
-	
+
 	var textProcessor, currentFailureCallback, closeMicFunc;
 
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var doSend = function(msg, successCallback, failureCallback){
-		
+
 		if(successCallback){
 			textProcessor = successCallback;
 		}
 		if(failureCallback){
 			currentFailureCallback = failureCallback;
 		}
-		
+
 		if(!webSocket || webSocket.readyState >= 2){//INVALID or CLOSING/CLOSED
 			webSocket = null;//<- avoid close() call in initializer
 			doInitSend(function(){ webSocket.send(msg); });
@@ -194,13 +213,13 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 
 	};
 
-	/** initializes the connection to the googleMediator-server, 
+	/** initializes the connection to the googleMediator-server,
 	 * where the audio will be sent in order to be recognized.
-	 * 
+	 *
 	 * @memberOf Googlev1WebAudioInputImpl#
 	 */
-	var doInitSend = function(oninit){ 
-		
+	var doInitSend = function(oninit){
+
 		if (webSocket){
 			webSocket.close();
 		}
@@ -224,7 +243,7 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 		/**  @memberOf Googlev1WebAudioInputImpl.webSocket# */
 		webSocket.onmessage = function(e) {
 			if (e.data.substring(0,5) == 'ERROR'){
-				console.error('Serverside Error '+e.data.substring(6));  	
+				console.error('Serverside Error '+e.data.substring(6));
 				return;/////////////////// EARLY EXIT ////////////////////
 			}
 			var id = e.data.substring(0,e.data.indexOf("_"));
@@ -235,15 +254,15 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 			//FIXME debug output:
 			console.debug('HTML5-Speech-Recoginition_received ASR: '+jsonText );
 			if(jsonText && jsonText.length > 0){//FIXME
-				
+
 				var jsonResponse = JSON.parse(jsonText);
 				var size = jsonResponse.hypotheses.length;
 				if (size > 0){
-					
+
 					if(textProcessor){
-						
+
 						var type = lastBlob? 'FINAL' : 'INTERMEDIATE';
-						
+
 						var alt;
 						if (size > 1){
 							alt = [];
@@ -264,7 +283,7 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 //      		//		FIXME really, this is only necessary when stopping the ASR/recording (but would need to recoginze this case...)
 //      		else if(textProcessor){
 //  				textProcessor('', 1, 'FINAL');
-//      		}    				 
+//      		}
 				else if(lastBlob || isUseIntermediateResults){
 					textProcessor('', 1, 'FINAL');
 				}
@@ -293,10 +312,10 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 			console.info('Websocket closed!'+(e.code? ' CODE: '+e.code : '')+(e.reason? ' REASON: '+e.reason : ''));
 		};
 	};
-	
+
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var buffer = 0;
-	
+
 	/** @memberOf Googlev1WebAudioInputImpl# */
 	var onSendPart = function(evt){
 
@@ -312,10 +331,10 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 //					} else {
 						//mediaManager.playWAV(blob,function(){},function(){alert("could not play blob");});
 						if (!hasActiveId) {
-	
+
 							var lang = currentOptions.language? currentOptions : languageManager.getLanguage();//FIXME use languageManager.getLanguageConfig(_pluginName) instead?
 							doSend("language "+ lang);
-	
+
 							inputId = findLowestFreeId();
 							hasActiveId = true;
 							doSend("start "+ inputId);
@@ -423,7 +442,7 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 			textProcessor = successCallback;
 			currentFailureCallback = failureCallback;
 			closeMicFunc = stopUserMedia;
-			
+
 			currentOptions = options;
 			isUseIntermediateResults = options.intermediate;
 		},
@@ -437,5 +456,7 @@ newWebAudioAsrImpl = (function Googlev1WebAudioInputImpl() {
 			return lastBlob;
 		}
 	};
-	
+
 })();
+
+}));//END UMD wrapper/factory

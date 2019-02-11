@@ -3,95 +3,115 @@
  * 	Deutsches Forschungszentrum fuer Kuenstliche Intelligenz
  * 	German Research Center for Artificial Intelligence
  * 	http://www.dfki.de
- * 
- * 	Permission is hereby granted, free of charge, to any person obtaining a 
- * 	copy of this software and associated documentation files (the 
- * 	"Software"), to deal in the Software without restriction, including 
- * 	without limitation the rights to use, copy, modify, merge, publish, 
- * 	distribute, sublicense, and/or sell copies of the Software, and to 
- * 	permit persons to whom the Software is furnished to do so, subject to 
+ *
+ * 	Permission is hereby granted, free of charge, to any person obtaining a
+ * 	copy of this software and associated documentation files (the
+ * 	"Software"), to deal in the Software without restriction, including
+ * 	without limitation the rights to use, copy, modify, merge, publish,
+ * 	distribute, sublicense, and/or sell copies of the Software, and to
+ * 	permit persons to whom the Software is furnished to do so, subject to
  * 	the following conditions:
- * 
- * 	The above copyright notice and this permission notice shall be included 
+ *
+ * 	The above copyright notice and this permission notice shall be included
  * 	in all copies or substantial portions of the Software.
- * 
- * 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
- * 	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- * 	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
- * 	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
- * 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ *
+ * 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * 	OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * 	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * 	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * 	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * 	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * 	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 /**
  * Media Module: Implementation for Speech Recognition via AT&T ASR over HTTPS/POST
- * 
+ *
  * @requires AMR encoder (workers/amrEncoder.js)
  * @requires Cross-Domain access
  * @requires CSP for accessing the AT&T ASR server, e.g. "connect-src https://api.att.com" or "default-src https://api.att.com"
- * 
+ *
  */
-newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
-		
+
+;(function (root, factory) {
+
+	// legacy mode mmir v3
+	var isLegacyMode3 = true;
+		// legacy mode mmir v4
+	var isLegacyMode4 = true;
+	var mmirRef = null;
+	var mmirName = typeof MMIR_CORE_NAME === 'string'? MMIR_CORE_NAME : 'mmir';
+	if(root && root[mmirName]){
+		mmirRef = root[mmirName];
+		//just to make sure: set legacy-mode if version is < v4
+		isLegacyMode3 = mmirRef? mmirRef.isVersion(4, '<') : true;
+		isLegacyMode4 = isLegacyMode3 || mmirRef.isVersion(5, '<');
+	}
+
+	if(isLegacyMode3 || isLegacyMode4){
+
+		root.newWebAudioAsrImpl = factory(mmirRef, isLegacyMode3);
+
+	} else {
+
+		if (typeof define === 'function' && define.amd) {
+				// AMD. Register as an anonymous module.
+				define(function () {
+						return factory(mmirRef, false);
+				});
+		} else if (typeof module === 'object' && module.exports) {
+				// Node. Does not work with strict CommonJS, but
+				// only CommonJS-like environments that support module.exports,
+				// like Node.
+				module.exports = factory(mmirRef, false);
+		} else {
+				// Browser globals
+				root.newWebAudioAsrImpl = factory(mmirRef, false);
+		}
+	}
+}(typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : this, function (_mmir, _isLegacyMode) {
+
+return (function ATnTWebAudioInputImpl(){
+
 	/**  @memberOf ATnTWebAudioInputImpl# */
 	var MODE = 'atnt';
 
 	/**  @memberOf ATnTWebAudioInputImpl# */
 	var _pluginName = 'atntWebAudioInput';
 
-	/** 
-	 * legacy mode: use pre-v4 API of mmir-lib
-	 * @memberOf ATnTWebAudioInputImpl#
-	 */
-	var _isLegacyMode = true;
-	/** 
-	 * Reference to the mmir-lib core (only available in non-legacy mode)
-	 * @type mmir
-	 * @memberOf ATnTWebAudioInputImpl#
-	 */
-	var _mmir = null;
-	
-	//get mmir-lib core from global namespace:
-	_mmir = window[typeof MMIR_CORE_NAME === 'string'? MMIR_CORE_NAME : 'mmir'];
-	if(_mmir){
-		// set legacy-mode if version is < v4
-		_isLegacyMode = _mmir? _mmir.isVersion(4, '<') : true;
-	}
-	
 	/**
-	 * HELPER for require(): 
+	 * HELPER for require():
 	 * 		use module IDs (and require instance) depending on legacy mode
-	 * 
+	 *
 	 * @param {String} id
 	 * 			the require() module ID
-	 * 
+	 *
 	 * @returns {any} the require()'ed module
-	 * 
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var _req = function(id){
 		var name = (_isLegacyMode? '' : 'mmirf/') + id;
 		return _mmir? _mmir.require(name) : require(name);
 	};
-	
-	/** 
+
+	/**
 	 * @type mmir.LanguageManager
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var languageManager = _req('languageManager');
-	/** 
+	/**
 	 * @type mmir.ConfigurationManager
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var configurationManager = _req('configurationManager');
 
-	/** 
+	/**
 	 * @type mmir.ConfigurationManager
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var mediaManager = _req('mediaManager');
-	
+
 	/** @memberOf ATnTWebAudioInputImpl# */
 	var result_types = {
 			"FINAL": 				"FINAL",
@@ -104,18 +124,18 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 
 	/** @memberOf ATnTWebAudioInputImpl# */
 	var lastBlob = false;
-	
+
 	/**
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var oAuthToken = '';
-	
-	
+
+
 	/**
 	 * Supported language/country codes:
 	 * since the services currently has very limited country support,
 	 * this is used for mapping unsupported country codes to supported ones
-	 * 
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var supportedLang = {
@@ -128,30 +148,30 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var defaultLang = supportedLang.en;
-	
+
 
 	/**
 	 * Recognition options for current recognition process.
-	 * 
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 * @see mmir.MediaManager#recognize
 	 */
 	var currentOptions;
-	
+
 	/**
 	 * HELPER retrieve language setting and apply impl. specific corrections/adjustments
 	 * (i.e. deal with AT&T specific quirks for language/country codes)
-	 *   
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var getFixedLang = function(options){
-		
+
 		var lang = options && options.language? options.language : languageManager.getLanguageConfig(_pluginName);
-		
+
 		//since the service supportes few languages/country codes, try to automatically "convert"
 		// mismatched country-codes to supported ones
 		if(/^e[ns]/i.test(lang)){
-			
+
 			var isSupported = false;
 			for(var l in supportedLang){
 				if(supportedLang.hasOwnProperty(l) && supportedLang[l] === lang){
@@ -159,24 +179,24 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 					break;
 				}
 			}
-			
+
 			if(! isSupported){
 				var langCode = lang.substring(0, 2);
 				console.warn('unsupported language/country code "'+lang+'": reverting to supported code '+supportedLang[langCode]);
 				lang = supportedLang[langCode];
 			}
-			
+
 		}
-		
+
 		return lang;
 	};
-	
+
 //	var textProcessor, currentFailureCallback;
-	
+
 	/**
 	 * @returns {Boolean} TRUE if cause was invalid authentification (-> might try to get a new oauth token).
 	 * 					Otherwise FALSE
-	 * 
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var asrErrorWrapper = function(ajax,response,blobsize){
@@ -243,7 +263,7 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 
 //		successCallback = successCallback || textProcessor;
 //		errorCallback = errorCallback || currentFailureCallback;
-		
+
 		if(!oAuthToken){
 			//missing oauth-token 	-> try to retrieve one now, and continue with asr when token is available
 			doInitSend(function(){
@@ -264,25 +284,25 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 
 				var jsonResp = JSON.parse(this.responseText);
 				if(jsonResp && jsonResp.Recognition && !! jsonResp.Recognition.NBest){
-					
+
 					var results = jsonResp.Recognition.NBest;
 					respText = results[0].ResultText;
-					
+
 					if(results.length > 1){
 						altRes = [];
 						for(var i=1,size=results.length; i < size; ++i){
 							altRes.push({text: results[i]});
 						}
 					}
-					
+
 				} else {
 					console.error('no asr results!');
 				}
 
 				if(successCallback){
-					
+
 					type = lastBlob? result_types.FINAL : result_types.INTERMEDIATE;
-					
+
 					successCallback(respText,1,type,altRes);
 				}
 
@@ -336,7 +356,7 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 			console.warn('Unsupported language "'+apiLang+'" requested ... ');
 //			apiLang = defLang;
 		}
-		
+
 		if(apiLang !== defaultLang){
 			oAjaxReq.setRequestHeader("Content-Language", apiLang);
 //			oAjaxReq.setRequestHeader("X-SpeechContext", "Generic");// <- if omitted, the default is: Generic
@@ -350,7 +370,7 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 
 	/**
 	 * init ASR atnt: get oAuth token
-	 * 
+	 *
 	 * @memberOf ATnTWebAudioInputImpl#
 	 */
 	var doInitSend = function _initSendAtnt(oninit){
@@ -441,12 +461,12 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 			return _pluginName;
 		},
 		setCallbacks: function(successCallbackFunc, failureCallbackFunc, stopUserMediaFunc, options){
-			
+
 			//callbacks need to be set in doSend() only
 //			successCallback = successCallbackFunc;
 //			errorCallback = failureCallbackFunc;
 //			var func = stopUserMediaFunc;
-			
+
 			currentOptions = options;
 		},
 		setLastResult: function(){
@@ -459,5 +479,7 @@ newWebAudioAsrImpl = (function ATnTWebAudioInputImpl(){
 			return lastBlob;
 		}
 	};
-		
+
 })();
+
+}));//END UMD wrapper/factory

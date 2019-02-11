@@ -19,8 +19,6 @@ you also need to install the `browser` platform, e.g. `cordova platform add brow
     ASR (Automatic Speech Recognition)
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-asr-google-web
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-asr-nuance-web
-      [outdated] cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:deprecated/mmir-plugin-asr-atnt-web
-      [outdated] cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:deprecated/mmir-plugin-asr-googlev1-web
 
     TTS (Text To Speech)
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-tts-nuance-web
@@ -30,6 +28,11 @@ you also need to install the `browser` platform, e.g. `cordova platform add brow
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-encoder-amr
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-encoder-flac
       cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:mmir-plugin-encoder-core
+
+    [OUTDATED]
+    ASR (Automatic Speech Recognition)
+      [outdated] cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:deprecated/mmir-plugin-asr-atnt-web
+      [outdated] cordova plugin add https://github.com/mmig/mmir-plugins-media.git#master:deprecated/mmir-plugin-asr-googlev1-web
 
 
 ## Install As Resources in WWW
