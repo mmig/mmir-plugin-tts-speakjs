@@ -144,8 +144,8 @@ define(['mmirf/mediaManager', 'mmirf/constants', 'mmirf/languageManager'], funct
 		var _pending = {};
 		var _idCounter = 0;
 
-		var workerPath = typeof WEBPACK_BUILD !== 'undefined' && WEBPACK_BUILD? './webworker/speakWorkerExt.js' : consts.getWorkerPath() + 'speakWorkerExt.js';
-		var _worker = typeof WEBPACK_BUILD !== 'undefined' && WEBPACK_BUILD? require(workerPath)() : new Worker(workerPath);
+		var workerPath = consts.getWorkerPath() + 'speakWorkerExt.js';
+		var _worker = typeof WEBPACK_BUILD !== 'undefined' && WEBPACK_BUILD? require('./webworker/speakWorkerExt.js')() : new Worker(workerPath);
 		/**
 		 * @memberOf SpeakJsWebAudioTTSImpl.worker
 		 */
@@ -204,4 +204,5 @@ define(['mmirf/mediaManager', 'mmirf/constants', 'mmirf/languageManager'], funct
 				_getVoiceParam = getVoiceParamFunc;
 			}
 		};//END: return { ...
-})();
+
+});//END: define(...
