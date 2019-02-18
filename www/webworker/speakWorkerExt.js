@@ -16,7 +16,7 @@ if(typeof WEBPACK_BUILD !== 'undefined' && WEBPACK_BUILD){
 	 * https://github.com/logue/speak.js
 	 * License: GPL-3.0
 	 */
-	importScripts('speakGenerator.js');
+	importScripts('speakGenerator.min.js');
 }
 
 ;(function(global){
