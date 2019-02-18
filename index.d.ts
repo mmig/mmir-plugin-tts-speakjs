@@ -4,10 +4,10 @@ export * from './config';
 /// <reference types="mmir-lib" />
 import { TTSOnError, TTSOnComplete, TTSOnReady, MediaManager, TTSOptions } from 'mmir-lib';
 
-declare interface ASRNuanceXHROptions extends TTSOptions {
+declare interface TTSSpeackJSOptions extends TTSOptions {
   /**
    * [supported option]
-   * set language/country for ASR
+   * set language/country for TTS
    */
   language?: 'en-us' | 'de';
 
