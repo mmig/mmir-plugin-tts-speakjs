@@ -1,4 +1,7 @@
 // eSpeak and other code here are under the GNU GPL.
+
+;(function(global){
+	
 function generateSpeech(text, args) {
   var self = { text: text, args: args, ret: null };
   (function() {
@@ -69951,3 +69954,5 @@ run();
   return self.ret;
 }
 
+global.generateSpeech = generateSpeech;
+})(typeof window !== 'undefined'? window : typeof self !== 'undefined'? self : typeof global !== 'undefined'? global : this);
