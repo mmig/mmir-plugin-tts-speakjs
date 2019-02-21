@@ -4,7 +4,7 @@ export * from './config';
 /// <reference types="mmir-lib" />
 import { TTSOnError, TTSOnComplete, TTSOnReady, MediaManager, TTSOptions } from 'mmir-lib';
 
-declare interface TTSSpeackJSOptions extends TTSOptions {
+declare interface PluginTTSOptions extends TTSOptions {
   /**
    * [supported option]
    * set language/country for TTS
@@ -47,6 +47,6 @@ declare interface TTSSpeackJSOptions extends TTSOptions {
   wordgap?: number;
 }
 
-declare interface MediaManagerTTSSpeakJS extends MediaManager {
-  tts: (options: string | string[] | TTSOptions, successCallback?: TTSOnComplete, failureCallback?: TTSOnError, onInit?: TTSOnReady, ...args: any[]) => void;
+declare interface PluginMediaManager extends MediaManager {
+  tts: (options: string | string[] | PluginTTSOptions, successCallback?: TTSOnComplete, failureCallback?: TTSOnError, onInit?: TTSOnReady, ...args: any[]) => void;
 }

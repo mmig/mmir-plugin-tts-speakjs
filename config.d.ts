@@ -1,5 +1,5 @@
 
-import { MediaManagerPluginEntry } from 'mmir-lib';
+import { MediaManagerPluginEntry, SpeechConfigPluginEntry } from 'mmir-lib';
 
 /**
  * (optional) entry "ttsSpeakjs" in main configuration.json
@@ -10,19 +10,21 @@ import { MediaManagerPluginEntry } from 'mmir-lib';
  * {@link MediaManagerWebInput#recognize} or {@link MediaManagerWebInput#startRecord}
  * (if specified via the options, values will override configuration settings).
  */
-export interface TTSSpeakJSConfigEntry {
-  ttsSpeakjs?: TTSSpeakJSConfig;
+export interface PluginConfig {
+  ttsSpeakjs?: PluginConfigEntry;
 }
 
-export interface TTSSpeakJSConfig extends MediaManagerPluginEntry {
+export interface PluginSpeechConfigEntry extends SpeechConfigPluginEntry {
   /** OPTIONAL
-   * @see #voice
-   * @default "en-us" */
+   * @see #voice */
   language?: 'en-us' | 'de'; // TODO support more languages?
   /** OPTIONAL
-   * @see #language
-   * @default "en-us" */
+   * NOTE there is only one voice per language, so voice and language are synonymous
+   * @see #language */
   voice?: 'en-us' | 'de'; // TODO support more languages?
+}
+
+export interface PluginConfigEntry extends MediaManagerPluginEntry {
 
   /** OPTIONAL
    * [custom option]

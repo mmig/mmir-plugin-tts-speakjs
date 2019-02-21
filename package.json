@@ -8,8 +8,7 @@
   },
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pluginexport"
+    "build": "createplugincompat ./ && pluginexport ./"
   },
   "repository": {
     "type": "git",
@@ -37,8 +36,9 @@
     "cordovaDependencies": {}
   },
   "mmir": {
-    "workers": [
-      "./www/webworker"
-    ]
+    "workers": ["./www/webworker"],
+    "compat": {
+      "./www/ttsSpeakJsImpl.js": {"file": "./www/alt/ttsSpeakJsImplCompat.js", "type": "tts"}
+    }
   }
 }

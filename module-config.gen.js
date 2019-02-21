@@ -30,14 +30,15 @@ module.exports = {
      * How loud the voice will be
      * @default 100
      */
-    "amplitude",
+    "amplitude"
+  ],
+  speechConfig: [
     /** OPTIONAL
-     * @see #language
-     * @default "en-us" */
+     * NOTE there is only one voice per language, so voice and language are synonymous
+     * @see #language */
     "voice",
     /** OPTIONAL
-     * @see #voice
-     * @default "en-us" */
+     * @see #voice */
     "language"
   ]
 };

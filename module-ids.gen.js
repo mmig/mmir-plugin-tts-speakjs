@@ -9,6 +9,7 @@ var _paths = {
   "mmir-plugin-tts-speakjs/speakGenerator": "www/speakGenerator.js",
   "mmir-plugin-tts-speakjs/speakGenerator.min": "www/speakGenerator.min.js",
   "mmir-plugin-tts-speakjs/ttsSpeakJsImpl": "www/ttsSpeakJsImpl.js",
+  "mmir-plugin-tts-speakjs/ttsSpeakJsImplCompat": "www/alt/ttsSpeakJsImplCompat.js",
   "mmir-plugin-tts-speakjs/workers/speakWorkerExt": "www/webworker/speakWorkerExt.js",
   "mmir-plugin-tts-speakjs": "www/ttsSpeakJsImpl.js"
 };
