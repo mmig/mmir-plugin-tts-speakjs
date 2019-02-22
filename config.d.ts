@@ -11,7 +11,7 @@ import { MediaManagerPluginEntry, SpeechConfigPluginEntry } from 'mmir-lib';
  * (if specified via the options, values will override configuration settings).
  */
 export interface PluginConfig {
-  ttsSpeakjs?: PluginConfigEntry;
+  ttsSpeakjs?: PluginConfigEntry | PluginSpeechConfigEntry;
 }
 
 export interface PluginSpeechConfigEntry extends SpeechConfigPluginEntry {
