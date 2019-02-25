@@ -30,8 +30,18 @@ module.exports = {
      * How loud the voice will be
      * @default 100
      */
-    "amplitude"
+    "amplitude",
+    /** the plugin/module which which will load/use this specific TTS implementation
+     * @default mmir-plugin-tts-core-xhr.js
+     */
+    "mod"
   ],
+  defaultValues: {
+    speed: 175,
+    pitch: 50,
+    amplitude: 100,
+    mod: "mmir-plugin-tts-core-xhr.js"
+  },
   speechConfig: [
     /** OPTIONAL
      * NOTE there is only one voice per language, so voice and language are synonymous

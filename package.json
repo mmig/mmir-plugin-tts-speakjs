@@ -36,9 +36,14 @@
     "cordovaDependencies": {}
   },
   "mmir": {
-    "workers": ["./www/webworker"],
+    "workers": [
+      "./www/webworker"
+    ],
     "compat": {
-      "./www/ttsSpeakJsImpl.js": {"file": "./www/alt/ttsSpeakJsImplCompat.js", "type": "tts"}
+      "./www/ttsSpeakJsImpl.js": {
+        "file": "./www/alt/ttsSpeakJsImplCompat.js",
+        "type": "tts"
+      }
     }
   }
 }

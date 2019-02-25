@@ -26,6 +26,11 @@ export interface PluginSpeechConfigEntry extends SpeechConfigPluginEntry {
 
 export interface PluginConfigEntry extends MediaManagerPluginEntry {
 
+  /** the plugin/module which which will load/use this specific TTS implementation
+   * @default mmir-plugin-tts-core-xhr.js
+   */
+  mod: 'mmir-plugin-tts-core-xhr.js';
+
   /** OPTIONAL
    * [custom option]
    * How loud the voice will be
