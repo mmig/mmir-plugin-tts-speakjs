@@ -20,8 +20,8 @@
 
     <!-- ASR plugin implementation for integration into MMIR framework  -->
     <asset
-        src="www/ttsSpeakJsImpl.js"
-        target="mmirf/env/media/ttsSpeakJsImpl.js" />
+        src="www/ttsSpeakjs.js"
+        target="mmirf/env/media/ttsSpeakjs.js" />
 
 
     <!-- WebWorker for generating the audio -->

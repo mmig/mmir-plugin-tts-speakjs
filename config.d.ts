@@ -5,7 +5,7 @@ import { MediaManagerPluginEntry, SpeechConfigPluginEntry } from 'mmir-lib';
 
 /**
  * (optional) entry "ttsSpeakjs" in main configuration.json
- * for settings of ttsSpeakJsImpl module.
+ * for settings of ttsSpeakjs module.
  *
  * Some of these settings can also be specified by using the options argument
  * in the TTS functions of {@link MediaManagerWebInput}, e.g.
