@@ -32,6 +32,11 @@ export interface PluginConfigEntry extends MediaManagerPluginEntry {
    * @default mmir-plugin-tts-core-xhr.js
    */
   mod: 'mmir-plugin-tts-core-xhr.js';
+  /**
+   * the plugin type
+   * @default "tts"
+   */
+  type: 'tts';
 
   /** OPTIONAL
    * [custom option]

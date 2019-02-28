@@ -31,6 +31,11 @@ module.exports = {
      * @default 100
      */
     "amplitude",
+    /**
+     * the plugin type
+     * @default "tts"
+     */
+    "type",
     /** the plugin/module which which will load/use this specific TTS implementation
      * @default mmir-plugin-tts-core-xhr.js
      */
@@ -40,6 +45,7 @@ module.exports = {
     speed: 175,
     pitch: 50,
     amplitude: 100,
+    type: "tts",
     mod: "mmir-plugin-tts-core-xhr.js"
   },
   speechConfig: [
