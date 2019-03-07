@@ -7,7 +7,7 @@
  * @requires CSP allowing blob: protocal as media-source, e.g. "media-src blob:" or "default-src blob:"
  *
  */
-define(['mmirf/mediaManager', 'mmirf/constants', 'mmirf/languageManager', 'mmirf/configurationManager'], function(mediaManager, consts, lang, config){
+define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf/configurationManager'], function(mediaManager, consts, lang, config){
 
 		/**  @memberOf SpeakJsWebAudioTTSImpl# */
 		var _pluginName = 'ttsSpeakjs';
