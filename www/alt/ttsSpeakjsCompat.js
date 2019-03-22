@@ -180,13 +180,15 @@
 			var voice = _getVoiceParam(options);
 			if(/^(fe)?male$/i.test(voice)){
 
+				if(voice === 'female' && typeof options.pitch === 'undefined'){
+					//FIXME if no pitch is set, try the best to make voice sound more female by setting maximal pitch
+					//TODO remove this when speakjs lib supports voices
+					options.pitch = 100;
+				}
+
 				//auto-correct feature selection: current speakjs lib does not support gender for voices
 				voice = void(0);
 
-				if(voice === 'female' && typeof options.pitch === 'undefined'){
-					//if no pitch is set, try the best to make voice sound more female by setting max. pitch
-					options.pitch = 100;
-				}
 			}
 			if(!voice){
 				voice = _getFixedLang(options);
