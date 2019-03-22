@@ -83,7 +83,7 @@ define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf
 
 			var lang = options && (options.language || '').replace(/[-_]\w+$/, '');
 			var voices = options && options.details? _voiceList : _langList;
-			if(callback) setTimeout(function(){callback(!lang? voices : voices.filter(function(v){return v.language === lang;}))}, 0);
+			if(callback) setTimeout(function(){callback(!lang? voices : voices.filter(function(v){return v.language? v.language === lang : v === lang;}))}, 0);
 		};
 
 		/**  @memberOf SpeakJsWebAudioTTSImpl# */
