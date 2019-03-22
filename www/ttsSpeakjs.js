@@ -19,6 +19,23 @@ define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf
 		 */
 		var _langSeparator = '-';
 
+		/**
+		 * list of supported languages (and voice-names)
+		 * TODO update speakjs library & retrieve from speakjs instead of hardcoding!
+		 */
+		var _langList = ['de', 'en'];
+		/**
+		 * details-list of supported voices
+		 * TODO update speakjs library & retrieve from speakjs instead of hardcoding!
+		 */
+		var _voiceList = _langList.map(function(l){
+			return {
+				name: l,
+				language: l,
+				gender: 'male'
+			};
+		});
+
 		/** @memberOf SpeakJsWebAudioTTSImpl# */
 		var _getLangParam;
 		/** @memberOf SpeakJsWebAudioTTSImpl# */
@@ -50,6 +67,25 @@ define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf
 
 		};
 
+		/** @memberOf SpeakJsWebAudioTTSImpl#
+		 * @see mmir.MediaManager#getSpeechLanguages
+		 */
+		var getLanguageList = function(callback, _onerror){
+
+			if(callback) setTimeout(function(){callback(_langList)}, 0);
+		};
+
+
+		/** @memberOf SpeakJsWebAudioTTSImpl#
+		 * @see mmir.MediaManager#getVoices
+		 */
+		var getVoiceList = function(options, callback, _onerror){
+
+			var lang = options && (options.language || '').replace(/[-_]\w+$/, '');
+			var voices = options && options.details? _voiceList : _langList;
+			if(callback) setTimeout(function(){callback(!lang? voices : voices.filter(function(v){return v.language === lang;}))}, 0);
+		};
+
 		/**  @memberOf SpeakJsWebAudioTTSImpl# */
 		var getTTSOptions = function(options){
 
@@ -62,6 +98,16 @@ define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf
 			var opts = {};
 
 			var voice = _getVoiceParam(options);
+			if(/^(fe)?male$/i.test(voice)){
+
+				//auto-correct feature selection: current speakjs lib does not support gender for voices
+				voice = void(0);
+
+				if(voice === 'female' && typeof options.pitch === 'undefined'){
+					//if no pitch is set, try the best to make voice sound more female by setting max. pitch
+					options.pitch = 100;
+				}
+			}
 			if(!voice){
 				voice = _getFixedLang(options);
 			}
@@ -192,6 +238,20 @@ define(['mmirf/mediaManager', 'mmirf/resources', 'mmirf/languageManager', 'mmirf
 			 */
 			getCreateAudioFunc: function(){
 				return createAudio;
+			},
+			/**
+			 * @public
+			 * @memberOf SpeakJsWebAudioTTSImpl.prototype
+			 */
+			getLanguageListFunc: function(){
+				return getLanguageList;
+			},
+			/**
+			 * @public
+			 * @memberOf SpeakJsWebAudioTTSImpl.prototype
+			 */
+			getVoiceListFunc: function(){
+				return getVoiceList;
 			},
 			/**
 			 * @public

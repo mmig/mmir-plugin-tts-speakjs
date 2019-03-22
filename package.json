@@ -23,6 +23,7 @@
   "author": "russa",
   "license": "GPL-3.0",
   "devDependencies": {
+    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack",
     "mmir-plugin-exports": "git+https://gitlab-cos.b.dfki.de/mmir/mmir-plugin-exports.git"
   },
   "peerDependencies": {
