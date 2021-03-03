@@ -2,7 +2,7 @@
 <plugin
     xmlns="http://cordova.apache.org/ns/plugins/1.0"
     id="mmir-plugin-tts-speakjs"
-    version="1.0.0">
+    version="0.0.4">
 
     <name>speak.js Speech Synthesis</name>
 
